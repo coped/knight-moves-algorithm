@@ -1,24 +1,29 @@
 class Node
-    attr_accessor :position, :parent, :children
+    attr_accessor :position, :parent, :children, :moves
     
-    def initialize position, parent = nil
+    def initialize(position, parent = nil)
         @position = position
         @parent = parent
-        @children = get_children position
+        @moves = [
+            [1, 2],
+            [2, 1],
+            [2, -1],
+            [1, -2],
+            [-1, -2],
+            [-2, -1],
+            [-2, 1],
+            [-1, 2],
+        ]
+        @children = get_children(@position, @moves)
     end
 
-    def get_children position
+    def get_children(position, moves)
         children = []
-
-        children << [position[0] + 1, position[1] + 2] unless position[0] == 7 || position[1] >= 6
-        children << [position[0] + 2, position[1] + 1] unless position[0] >= 6 || position[1] == 7
-        children << [position[0] + 2, position[1] - 1] unless position[0] >= 6 || position[1] == 0
-        children << [position[0] + 1, position[1] - 2] unless position[0] == 7 || position[1] <= 1
-        children << [position[0] - 1, position[1] - 2] unless position[0] == 0 || position[1] <= 1
-        children << [position[0] - 2, position[1] - 1] unless position[0] <= 1 || position[1] == 0
-        children << [position[0] - 2, position[1] + 1] unless position[0] <= 1 || position[1] == 7
-        children << [position[0] - 1, position[1] + 2] unless position[0] == 0 || position[1] >= 6
-
+        moves.each do |move|
+            if (1..7).include?(position[0] + move[0]) && (1..7).include?(position[1] + move[1])
+                children << [(position[0] + move[0]), (position[1] + move[1])]
+            end
+        end
         children
     end
 end
@@ -34,7 +39,7 @@ class Game
             row_index = index
             8.times do |index|
                 position = []
-                position.unshift row_index
+                position.unshift(row_index)
                 position << index
                 board << position
             end
@@ -43,8 +48,8 @@ class Game
     end
 end
 
-def knight_moves starting, ending
-    root = Node.new starting
+def knight_moves(starting, ending)
+    root = Node.new(starting)
     queue = [root]
     moves = 0
     path = []
@@ -62,11 +67,11 @@ def knight_moves starting, ending
         end
     end
     until cur.parent.nil?
-        path.unshift cur.position
+        path.unshift(cur.position)
         cur = cur.parent
         moves += 1
     end
-    path.unshift starting
+    path.unshift(starting)
     puts "The shortest path from #{starting} to #{ending} takes #{moves} moves."
     puts "Path:"
     puts "#{path}"
@@ -74,4 +79,4 @@ end
 
 game = Game.new
 
-knight_moves [1, 1], [5, 6]
+knight_moves([1, 1], [1, 2])
