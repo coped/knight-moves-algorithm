@@ -20,8 +20,9 @@ class Node
     def get_children(position, moves)
         children = []
         moves.each do |move|
-            if (1..7).include?(position[0] + move[0]) && (1..7).include?(position[1] + move[1])
-                children << [(position[0] + move[0]), (position[1] + move[1])]
+            result = [(position[0] + move[0]), (position[1] + move[1])]
+            if result.all? { |i| (0..7).include?(i) }
+                children << result
             end
         end
         children
